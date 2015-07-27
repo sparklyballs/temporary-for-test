@@ -20,14 +20,11 @@ else
   echo "Database created. Granting access to 'root' ruser for all hosts."
   mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION"
   mysql -uroot -e "CREATE USER 'kodi' IDENTIFIED BY 'kodi'"
-  mysql -uroot -e "GRANT ALL ON * TO 'kodi' IDENTIFIED BY 'kodi'"
+  mysql -uroot -e "GRANT ALL ON *.* TO 'kodi' IDENTIFIED BY 'kodi'"
   mysqladmin -u root shutdown
   chown -R abc:abc /config
   chmod -R 755 /config
 fi
 
 echo "Starting MariaDB..."
-/usr/bin/mysqld_safe --skip-syslog --datadir='/config/databases'
-
-
-
+/usr/bin/mysqld_safe --skip-syslog --datadir='/config/databases' &
