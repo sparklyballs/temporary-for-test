@@ -19,23 +19,14 @@ CMD ["/sbin/my_init"]
 EXPOSE 9777/udp 
 EXPOSE 8080
 
+# adding some files requiried pre-build stage.
+ADD src/ /root/
+
 # set volume
 VOLUME /config 
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
-
-#Adduser abc
-RUN useradd -u 911 -U -s /bin/false abc
-RUN usermod -G users abc
-
-#Adding Custom files
-ADD src/ /root/
-ADD init/ /etc/my_init.d/
-ADD services/ /etc/service/
-RUN chmod -v +x /etc/service/*/run
-RUN chmod -v +x /etc/my_init.d/*.sh
-
 
 # set kodi checkout version as variable
 RUN kodiCheckout=15.0-Isengard && \
@@ -201,7 +192,6 @@ git apply headless.patch && \
 --prefix=/opt/kodi-server && \
 make && \
 make install && \
-chown -R abc:abc /opt/kodi-server && \
 
 # clean build area of no longer required dependencies and build files
 apt-get purge -y --remove \
@@ -233,3 +223,13 @@ sed -i -e 's#\(log_error.*=\).*#\1 /config/databases/mysql_safe.log#g' /etc/mysq
 sed -i -e 's/\(user.*=\).*/\1 abc/g' /etc/mysql/my.cnf && \
 echo '[mysqld]' > /etc/mysql/conf.d/innodb_file_per_table.cnf && \
 echo 'innodb_file_per_table' >> /etc/mysql/conf.d/innodb_file_per_table.cnf
+
+#Adduser abc
+RUN useradd -u 911 -U -s /bin/false abc
+RUN usermod -G users abc
+
+#Adding Custom files
+ADD init/ /etc/my_init.d/
+ADD services/ /etc/service/
+RUN chmod -v +x /etc/service/*/run
+RUN chmod -v +x /etc/my_init.d/*.sh

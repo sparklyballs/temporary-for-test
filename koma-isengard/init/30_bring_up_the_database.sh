@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /config/databases
 start_mysql(){
     /usr/bin/mysqld_safe --datadir=/config/databases > /dev/null 2>&1 &
     RET=1
