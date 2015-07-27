@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ -d "/opt/kodi-server/share/kodi/portable_data/userdata" ]; then
 echo "using existing datafiles"
 else

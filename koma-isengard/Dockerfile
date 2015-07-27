@@ -19,6 +19,9 @@ CMD ["/sbin/my_init"]
 EXPOSE 9777/udp 
 EXPOSE 8080
 
+# set volume
+VOLUME /config 
+
 # Set the locale
 RUN locale-gen en_US.UTF-8
 
