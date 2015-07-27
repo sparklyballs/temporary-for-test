@@ -51,9 +51,10 @@
 ########### THINGS BELOW ARE HOWEVER EDITABLE #######
 refer to http://kodi.wiki/view/Advancedsettings.xml for info on the various settings -->
 
-
-
-
+<network>
+<curlclienttimeout>20</curlclienttimeout>
+<curllowspeedtime>20</curllowspeedtime>
+</network>
 
 <videolibrary>
 <importresumepoint>true</importresumepoint>    <!-- import previously exported resume point from .nfo files -->
