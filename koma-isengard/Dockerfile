@@ -17,18 +17,7 @@ CMD ["/sbin/my_init"]
 
 # set ports
 EXPOSE 9777/udp 
-EXPOSE 3306
 EXPOSE 8080
-
-# set config volume
-VOLUME /config
-
-#Adding Custom files
-ADD src/ /root/
-ADD init/ /etc/my_init.d/
-ADD services/ /etc/service/
-RUN chmod -v +x /etc/service/*/run
-RUN chmod -v +x /etc/my_init.d/*.sh
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
@@ -37,10 +26,18 @@ RUN locale-gen en_US.UTF-8
 RUN useradd -u 911 -U -s /bin/false abc
 RUN usermod -G users abc
 
-# set kodi checkout version as variable
-RUN kodiCheckout=Isengard && \
+#Adding Custom files
+ADD src/ /root/
+ADD init/ /etc/my_init.d/
+ADD services/ /etc/service/
+RUN chmod -v +x /etc/service/*/run
+RUN chmod -v +x /etc/my_init.d/*.sh
 
-# set build dependencies as variable
+
+# set kodi checkout version as variable
+RUN kodiCheckout=15.0-Isengard && \
+
+# set build dependencies as variable
 buildDeps="build-essential \
 zip \
 unzip \
@@ -89,7 +86,7 @@ libiso9660-dev \
 libtinyxml-dev \
 liblzo2-dev" && \
 
-# set runtime dependencies as variable
+# set runtime dependencies as variable
 runtimeDeps="zip \
 libpcrecpp0 \
 libtag1-vanilla \
@@ -128,11 +125,11 @@ liblzo2-2 \
 libxrandr2 \
 unzip" && \
 
-# update apt
+# update apt
 mv /root/excludes /etc/dpkg/dpkg.cfg.d/excludes && \
 apt-get update -qq && \
 
-# Install build dependencies
+# Install build dependencies
 apt-get install \
 $buildDeps -qy && \
 
@@ -141,7 +138,7 @@ cd /tmp/ && \
 git clone https://github.com/xbmc/xbmc.git && \
 wget http://curl.haxx.se/download/curl-7.43.0.tar.gz && \
 
-# compile curl
+# compile curl
 cd /tmp && \
 tar xvf curl-* && \
 cd curl-* && \
@@ -152,12 +149,11 @@ cd curl-* && \
 make && \
 make install && \
 
-# checkout required branch, apply patch(es), configure and build kodi
+# checkout required branch, apply patch(es), configure and build kodi
 cd /tmp/xbmc && \
 mv /root/headless.patch . && \
 git checkout $kodiCheckout && \
 git apply headless.patch && \
-
 # Configure, make, install kodi
 ./bootstrap && \
 ./configure \
@@ -209,25 +205,26 @@ apt-get purge -y --remove \
 $buildDeps && \
 apt-get -y autoremove && \
 
-# install runtime dependencies and mariadb-server
+# install runtime dependencies
 apt-get install \
-mariadb-server \
 $runtimeDeps -qy && \
 
-# install kodisend
+# install kodisend and mariadb-server
 add-apt-repository ppa:team-xbmc/ppa && \
 apt-get update -qq && \
 apt-get install \
+mariadb-server \
 kodi-eventclients-xbmc-send -qy && \
 
-# remove un-needed repositories
+# remove un-needed repositories
 add-apt-repository --remove ppa:team-xbmc/ppa && \
 
 # clean up
-apt-get clean && \
+cd / && \
+apt-get clean -y && \
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Tweak my.cnf
+# set config of mariadb
 RUN sed -i -e 's#\(bind-address.*=\).*#\1 0.0.0.0#g' /etc/mysql/my.cnf && \
 sed -i -e 's#\(log_error.*=\).*#\1 /config/databases/mysql_safe.log#g' /etc/mysql/my.cnf && \
 sed -i -e 's/\(user.*=\).*/\1 abc/g' /etc/mysql/my.cnf && \
