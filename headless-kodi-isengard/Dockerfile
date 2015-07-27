@@ -35,7 +35,7 @@ RUN chmod -v +x /etc/my_init.d/*.sh
 
 
 # set kodi checkout version as variable
-RUN kodiCheckout=Isengard && \
+RUN kodiCheckout=15.0-Isengard && \
 
 # set build dependencies as variable
 buildDeps="build-essential \
