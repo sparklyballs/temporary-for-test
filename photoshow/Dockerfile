@@ -41,11 +41,13 @@ cd / && \
 apt-get clean -y && \
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# fetch photoshow from git and configure it
-RUN git clone https://github.com/thibaud-rohmer/PhotoShow.git /var/www/PhotoShow
-RUN sed -i -e 's/$config->photos_dir.\+/$config->photos_dir = "\/Pictures";/' /var/www/PhotoShow/config.php
-RUN sed -i -e 's/$config->ps_generated.\+/$config->ps_generated = "\/Thumbs";/' /var/www/PhotoShow/config.php
-RUN chown -R www-data:www-data /Thumbs
+#Adduser abc
+RUN useradd -u 911 -U -s /bin/false abc
+RUN usermod -G users abc
+
+#Adding Custom files
+ADD init/ /etc/my_init.d/
+RUN chmod -v +x /etc/my_init.d/*.sh
 
 # set supervisor and config files
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
