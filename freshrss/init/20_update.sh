@@ -7,4 +7,4 @@ apache2 \
 php5 \
 php5-common \
 php5-curl \
-php5-mysql -qyy
+php5-mysql -qqy
