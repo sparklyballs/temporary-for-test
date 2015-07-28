@@ -9,4 +9,5 @@ echo "checking for updates"
 cd /var/www/PhotoShow
 git pull
 fi
-
+sed -i -e "s@\$config->timezone.*@\$config->timezone = \"${TZ}\"@g" /var/www/PhotoShow/config.php
+chown -R abc:abc /var/www/PhotoShow /Thumbs
